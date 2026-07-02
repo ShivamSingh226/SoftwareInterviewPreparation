@@ -84,4 +84,71 @@ code_challenge_method=S256
 |---|---|
 |Access Token are opaque to applications which are using it | ID token has three parts: **Headers**(Algorithm used to encrypt as well as the key which signed the ID Token) , **Payload**: base64 encrypted JSON and **Signature**
 |Access token have audience as the Resource Server | ID token has application as an audience |
+| When you want ID Token along with Access Token just add scope=openid | When we use scope=id_token, it return id_token in redirect itself. However, with the scope=**openid-connect**, we can get whole bunch of info like email, user, or phone or validation. |
+
+
+When we put `response_type=code` & `scope=openid`, we will get both *id_token* and *access_token* .
+
+Even if we get id_token in the response, for the teams building on different SPA or services, authorization server can't ensure if the client is validating the id_token on it's own end or not.
+
+That's why **PKCE** along with **openid-connect** is recommended.  
+PKCE along with authorization code flow and getting access-token and id-token in response.  
+
+## Validation of tokens used
+
+1. Header will contain the `kid=gkjsjhwkk` and `alg=RS256` as an example to validate the signature.  
+2. Verification of **issuer** (`iss`) and **audience**(`aud`: containing your clientId) and `nonce` value which will be verified at the both ends.  
+3. Validating the signature and core json payload remains the cornerstone for validating request.  
+4. Defining the scope where it needs to be verified: If coming from Authorization Server directly, id-token verification should be done only once, if coming from front-channel or client-side cookie request, must be validated again.
+
+**Reference Token**: It doesn't mean anything, only stores reference to the value it is holding to in some databases like, *Memcached*, *Redis* or *PostgreSQL*.
+
+**Structured Token**: Storing the info like *user*, *profile*, *created_at* in encrypted format.
+
+## Pros and Cons of Reference Token
+
+| Pros of Reference Token | Cons of Reference Token |
+| --- | --- |
+| Can be easily deleted | Needs to be stored |
+| Sensitive Information can be hashed | Requires Network to validate |
+
+**Structured Token or self-contained token**: 
+No need for Storage  
+No need for separate Validation, already has header, payload and signature in the body  
+
+**Cons**:
+Has Fixed Validity, can't be revoked once the work is done.  
+
+A non-JWT Token requires external Validation (via introspection or lookup) but adds extra netework call.  
+
+
+## Introspect Endpoint for Remote Authentication of the Token
+
+1. /introspect HTTP POST 200 OK returning *"active: { true }"* denotes.  
+2. Header contains `kid` and `alg` which shouldn't be none.  
+3. Local Introspection takes signinging algorithm, `kid` JSON Webtoken and verifies the JWT Tokens
+
+## API Gateway- Best of both worlds(Performance boost by local validation and Stronger security of remote introspection)
+
+-  API Gateway handles token validation, delegating that particular role away from API requests. 
+
+- Revoked token and Valid Token passes through API Gateway  
+
+- Sensitive API requests being handled (like charging User's Credit Card or other) are sent to Token Introspection Endpoint and Authorization Server then filters it out    
+
+- Valid and Revoked Tokens pass through API Gateway
+
+- Refresh Tokens don't correspond to the session lifetime, it can be configured independently
+
+## Handling Revoked Tokens and other JWT Tokens
+
+- Revocation Endpoint to revoke active JWT Tokens because Revocation information lives in Authorization Server.  
+
+## Scopes in OAuth
+- Defining what an access Token can do within the context of a user what he can already do
+
+- Scopes are dependent on your API 
+- Used for APIs requesting and operating sensitive information
+- Segment unrelated parts of API
+- Add scopes for the API which charges the user when he/she is using a particular service or API
 
