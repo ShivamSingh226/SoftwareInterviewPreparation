@@ -152,3 +152,6 @@ A non-JWT Token requires external Validation (via introspection or lookup) but a
 - Segment unrelated parts of API
 - Add scopes for the API which charges the user when he/she is using a particular service or API
 
+## OAuth 2.1
+
+Most of the things are covered above.
