@@ -56,3 +56,41 @@ void merge(vector<int> &nums1, int m, vector<int> &nums2,int n){
     }
 }
 ```
+
+## 30th July 2026
+
+## Removing Duplicates
+
+```js
+
+// Maintain a variable cnt=0;
+// Iterate through for loop
+for(num:nums){
+    if(cnt<no_of_values_we_want || num>nums[cnt-no_of_values_we_want]){
+        nums[cnt++]=num;
+    }
+}
+return cnt;
+```
+
+## Majority Element [n/2] elements in an array
+
+```js
+int cnt=0;
+int elem=0;
+// Iterate through the array
+for(num:nums){
+    if(cnt==0){
+        elem=num;
+    }
+    if(elem==num){
+        cnt++;
+        // Increase the counter if the element is same
+    }else{
+        cnt--;
+        // Decrease the counter if the element is not same
+    }
+}
+return elem;
+// If a majority element is present it will be present at most times compared to other element even if we keep on substracting the cnt while iteration
+```
