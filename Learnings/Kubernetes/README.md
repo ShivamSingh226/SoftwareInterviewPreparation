@@ -54,7 +54,7 @@ metadata:
         tier: frontend
 spec:
     containers: 
-    - name: nginx
+     -name: nginx
       image: nginx
 ```
 
@@ -153,3 +153,32 @@ Then use `kubectl get pods`
 
 3. Mounts volumes, configures networking, starts container and reports pod status back to API server
 
+
+## DaemonSets
+
+- One pod every Node 
+- Used for node level agents
+- Scales automatically as nodes are added or removed
+
+## Deployments
+
+- Runs a specified number of replicas
+- Used for applications like web-servers
+- Scales by changing replica count through YAML file of deployment
+
+## Things to learn now:
+
+- ReplicaSets
+- Services
+- Namespaces
+- ConfigMaps
+- Secrets
+- Ingresses
+
+## What we have in Apps
+
+- Deployment
+- ConfigMap
+- Secret
+- Service
+- CronJob
