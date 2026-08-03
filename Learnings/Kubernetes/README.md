@@ -147,7 +147,7 @@ Then use `kubectl get pods`
 
 ## Kubernetes Deployment
 
-1. kubectl->kube-apiserver->etcd(store values in key-value pair)->kube-controller-manager(Need 3 pods - Check if everything is alright)->kube-scheduler(Choose worker node for hosting the pods) -> kubelet(Present on the worker node to check if all the pods are running or not)
+1. kubectl -> kube-apiserver -> etcd(store values in key-value pair)-> kube-controller-manager(Need 3 pods - Check if everything is alright) -> kube-scheduler(Choose worker node for hosting the pods) -> kubelet(Present on the worker node to check if all the pods are running or not)
 
 2. *kubelet* reads pod specification, pulls the container image, asks **container runtime env** (Docker or container-d) to create environment.
 
