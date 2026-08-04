@@ -251,6 +251,7 @@ Downsides
 - For example - Restaurant Service and Review Service, each submitting data to Message Broker and each getting collated to a new Service having *Read Text DB*  support.
 
 ### Event Sourcing Pattern
+---
 
 - Storage of not only the final states, but the steps also which led to it.  
 
