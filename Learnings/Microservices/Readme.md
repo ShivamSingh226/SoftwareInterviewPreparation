@@ -258,6 +258,7 @@ Downsides
 - Separate DB for storage of events which led to the final state
 
 - We store only changes/facts using events (ways to store it:- Databases and Message Broker)
+
 - Introduction of Message Broker for *Write Contention*, messages go through Message Broker and then are handled otherwise database has high write contention and poor performance
 
 - Strategies
