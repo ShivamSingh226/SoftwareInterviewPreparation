@@ -210,6 +210,7 @@ Downsides
 - Event Sourcing
 
 ### SAGA
+---
 
 - Distributed Transactions across different microservices because once we migrate to microservices, we lose ACID. 
 
@@ -227,9 +228,45 @@ Downsides
 
     - In case of any one event in the sequence fails, they will perform compensating operation in the form of events being published as a compensating operation
 
-    
+
+### CQRS Pattern - Command and Query Responsibility Segregation
+---
+
+- Action that results in data change
+
+- Only data read, no change(Show all products, filtering or sorting)
+
+- Insert/Update/Delete goes through command service and Read goes through Query Service
+
+- Supports SRP - Command Part supports permissions, input validation and business logic
+
+- High Performance - For Command we can use Relational DB and for query we can rely upon read heavy db like NoSQL Database
+
+- Separation of Concerns but for join operation we need to make two API calls while the answer is returned we do programmatic join
+
+- So, we introduce a new *Query Service* between two Microservices and we connect them through *Message Broker*. So, whenever the data is modified/changed the event is published and is consumed by Query Service
+
+- Eventual Consistency between Write and Read operation
+
+- For example - Restaurant Service and Review Service, each submitting data to Message Broker and each getting collated to a new Service having *Read Text DB*  support.
+
+### Event Sourcing Pattern
+
+- Storage of not only the final states, but the steps also which led to it.  
+
+- Separate DB for storage of events which led to the final state
+
+- We store only changes/facts using events (ways to store it:- Databases and Message Broker)
+- Introduction of Message Broker for *Write Contention*, messages go through Message Broker and then are handled otherwise database has high write contention and poor performance
+
+- Strategies
+    1. Replaying Events - **Snapshots**
+    2. CQRS - For the Insert/Append operation, we can introduce a message broker, Query Service will subcribe to it and publish the data to In-memory DB.
+    3. Advantages:  
+     We get History and Auditing, fast and efficient writes and fast and efficient reads',
+     Auditing, performant writes and Efficient Reads
 
 
 
-
+Notes to care about: Eventual Consistency and Event Sourcing pattern
 
