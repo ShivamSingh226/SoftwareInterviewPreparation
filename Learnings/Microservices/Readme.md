@@ -292,3 +292,59 @@ Notes to care about: Eventual Consistency and Event Sourcing pattern
 
 - This is called **Canary Testing**.
 
+## Observability - The Three Pillars
+
+- Distributed Logging : Append-only files, Events - Application Instance, Database, Server, Container Application
+
+- Metrics - Sampled Data Points, Numerical Values(Counters, Distribution, Gauges) 
+Request/min, 
+
+- Distributed Tracing
+
+
+### Distributed Logging
+---
+- Provide insights into Application State through Event, Action, Exception, Error.
+
+- Centralized structure, predefined structure, Log level/severity
+
+-  Adding correlationId
+
+- Adding contextual information, don't add sensitive data, Personal Identifiable Information (PII), Log Structure, Centralized Logging System
+
+### Metrics
+---
+ - Measurable and quantitative aspect which help us to monitor the software's vitals
+
+ - The five signals:
+    1. Traffic - Amount of Demand placed per unit of time
+    2. Errors - Rates and Types demarcation present
+    3. Latency - Time it takes for the service to process the request
+    4. Saturation - How overloaded, full a service or resource is
+    5. Utilization - How busy a resource is?
+
+
+### Distributed Tracing
+---
+
+- Every process of the microservices is traced repeatedly as it proceeds. And it is monitored
+
+- Helps narrow down : Faulty Component and Communication Problem
+
+- Logs and Metrics to debug further
+
+- Trace Context has trace Id. Trace Context wraps trace Id inside. 
+
+- A Trace Id is divided into many Trace Spans. Different units of work can be visualized and monitored using trace spans.
+
+- Traces get collected by an agent, pushes trace to a message broker suppose it named: Trace Data Processor, it is aggregated, analyzed, visualized and the data gets saved in DB.
+
+- Then, the trace data is queried.
+
+### Challenges
+
+1. Manual Instrumentation of code needs an agent to collect trace
+
+2. Cost of storing trace and querying it. So, sampling is used, but sometimes it's relatively hard to find the core issue out of such a high sampling rate.
+
+3. Big Traces/ too much data
