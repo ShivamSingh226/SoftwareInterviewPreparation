@@ -347,4 +347,4 @@ Request/min,
 
 2. Cost of storing trace and querying it. So, sampling is used, but sometimes it's relatively hard to find the core issue out of such a high sampling rate.
 
-3. Big Traces/ too much data
+3. Big Traces/ too much data: Difficult to monitor, too much info
