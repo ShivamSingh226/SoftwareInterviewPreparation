@@ -272,3 +272,23 @@ Downsides
 
 Notes to care about: Eventual Consistency and Event Sourcing pattern
 
+## Testing framework
+
+1. Unit Tests -> Integration Tests -> Functional tests/ End-to-End test
+
+2. Mocking response from Microservice A to B may not get reflected in the real scenario and tests will still get passed. To solve this, we use:
+
+### Contract Tests
+
+- Mock Responses are recorded into *Contract* and then those records are synced with the team of Microservice A and Microservice B. 
+
+### Blue-Green Deployment / Canary Testing
+
+- Canary Testing: We demark Blue servers as old one and Green one on which the testing is going on.
+
+- We route the user's request to the old Blue Server of old version while the new one(**Green One**) is getting tested.
+
+- When the testing is done successfully, we make the new server functional and if the testing fails we immediately route the requests to the old one
+
+- This is called **Canary Testing**.
+
