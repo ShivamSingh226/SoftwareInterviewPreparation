@@ -94,3 +94,26 @@ for(num:nums){
 return elem;
 // If a majority element is present it will be present at most times compared to other element even if we keep on substracting the cnt while iteration
 ```
+
+## 5th August 2026
+
+## Rotate Array
+```js
+/// The k would be mod by n
+k=k%n
+vector<int> temp;
+for(int i=n-k;i<n;i++){
+    temp.push_back(nums[i]);
+}
+
+for(int i=0;i<n-k;i++){
+    temp.push_back(nums[i]);
+}
+nums=temp;
+
+// Or
+// 
+reverse(nums.begin(),nums.begin()+(n-k));
+reverse(nums.begin()+n-k,nums.end());
+reverse(nums.begin(),nums.end());
+```
