@@ -54,7 +54,7 @@ metadata:
         tier: frontend
 spec:
     containers: 
-    - name: nginx
+     -name: nginx
       image: nginx
 ```
 
@@ -147,9 +147,38 @@ Then use `kubectl get pods`
 
 ## Kubernetes Deployment
 
-1. kubectl->kube-apiserver->etcd(store values in key-value pair)->kube-controller-manager(Need 3 pods - Check if everything is alright)->kube-scheduler(Choose worker node for hosting the pods) -> kubelet(Present on the worker node to check if all the pods are running or not)
+1. kubectl -> kube-apiserver -> etcd(store values in key-value pair)-> kube-controller-manager(Need 3 pods - Check if everything is alright) -> kube-scheduler(Choose worker node for hosting the pods) -> kubelet(Present on the worker node to check if all the pods are running or not)
 
 2. *kubelet* reads pod specification, pulls the container image, asks **container runtime env** (Docker or container-d) to create environment.
 
 3. Mounts volumes, configures networking, starts container and reports pod status back to API server
 
+
+## DaemonSets
+
+- One pod every Node 
+- Used for node level agents
+- Scales automatically as nodes are added or removed
+
+## Deployments
+
+- Runs a specified number of replicas
+- Used for applications like web-servers
+- Scales by changing replica count through YAML file of deployment
+
+## Things to learn now:
+
+- ReplicaSets
+- Services
+- Namespaces
+- ConfigMaps
+- Secrets
+- Ingresses
+
+## What we have in Apps
+
+- Deployment
+- ConfigMap
+- Secret
+- Service
+- CronJob
