@@ -117,3 +117,58 @@ reverse(nums.begin(),nums.begin()+(n-k));
 reverse(nums.begin()+n-k,nums.end());
 reverse(nums.begin(),nums.end());
 ```
+
+## Best time to buy and Sell Stock I and II 
+```js
+// maintain a variable called price since we want to buy a single stock on one day and maximize it later by selling another stock
+
+int pric=0;
+for(price:prices){
+    if(price< pric){
+        pric=price;
+    }
+    max_profit=max(max_profit, price-pric);
+}
+return max_profit;
+
+
+// we can either sell or buy at a given day holding at most one stock every day, to find maximum profit accumulated
+
+int maxmProfit=0;
+for(price:prices){
+    maxmProfit+=max(0, prices[i]-prices[i-1]);
+}
+return maxmProfit;
+```
+
+# 23rd Sept 2026
+
+## Jump Game I and Jump Game II
+
+```js
+// for Jumpgame I maintain a int variable pos
+int pos=0;
+for(i in range 1 to n-1){
+    if(nums[i]<=pos){
+        pos=max(pos,i+nums[i]);
+    }else{
+        return false;
+    }
+}
+return true;
+
+
+// For JumpGame II maintain a dp 1 D vector
+
+vector<int> minJumps(n,INT_MAX-1);
+minJumps[0]=0;
+for(int i in 1 to n-1){
+    for(int j=0;j<i;j++){
+        if(j+jumps[j]>=i){
+            minJumps[i]=min(minJumps[i],minJumps[j]+1);
+        }
+    }
+}
+return minJumps[n-1];
+```
+
