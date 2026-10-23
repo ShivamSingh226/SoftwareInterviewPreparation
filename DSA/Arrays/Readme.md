@@ -172,3 +172,100 @@ for(int i in 1 to n-1){
 return minJumps[n-1];
 ```
 
+## H-Index
+
+```js
+// H-index maximum value of h such that there are atleast h papers which have been cited atleast h-times
+
+// Sort the array it would give the count that papers have been cited atleast nums[i] times by seeing their position in the array
+
+sort(nums.begin(),nums.end());
+
+for(int i=0;i<n;i++){
+    if(citations[i]>=n-i){
+        ans=max(ans,n-i);
+    }
+}
+```
+
+## Insert Delete GetRandom O(1)
+
+```js
+// Initialize unordered_map and vector
+
+bool insert(int val){
+    if(!ump.count(val)){
+        v.push_back(val);
+        ump[val]=v.size()-1;
+    }else{
+        return false;
+    }
+}
+
+bool remove(int val){
+    if(ump.count(val)){
+        int ind=ump[val];
+        v[ind]=v.back();
+        v.pop_back();
+        ump.erase(val);
+    }else{
+        return false;
+    }
+}
+int getRand(){
+    return v[rand()%v.size()];
+}
+```
+
+## Product of Array except self
+
+```js
+
+// Maintain a prefix product array which will maintain the product before the element at position i
+
+vector<int> prefix(n,1);
+int postfix=1;
+for(int i=1;i<n;i++){
+    prefix[i]=nums[i-1]*prefix[i-1];
+}
+for(int i=n-1;i>=0;i--){
+    prefix[i]=prefix[i]*postfix;
+    postfix=postfix*nums[i];
+}
+return prefix;
+```
+
+## Gas Station
+
+```js
+    int ind=0;
+    for(int i=0;i<n;i++){
+        val+=(gas[i]-cost[i]);
+        costa+=(gas[i]-cost[i]);
+        if(costa<0){
+            costa=0;
+            ind=i+1;
+        }
+    }
+    return val>0?ind:-1;
+```
+
+## Candy
+
+```js
+int n=ratings.size();
+vector<int> candy(n,1);
+
+for(int i=1;i<n;i++){
+    if(ratings[i]>ratings[i-1]){
+        candy[i]=candy[i-1]+1;
+    }
+}
+for(int i=n-2;i>=0;i--){
+    if(ratings[i]>ratings[i+1]){
+        candy[i]=candy[i]>candy[i+1]?candy[i]:candy[i+1]+1;
+    }
+}
+return sum_of_candy_array;
+```
+
