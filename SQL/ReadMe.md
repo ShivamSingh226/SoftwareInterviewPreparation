@@ -97,3 +97,36 @@ like
 SELECT * FROM Employee e
 WHERE e.salary > (SELECT AVG(salary) FROM EMPLOYEE)
 ```
+
+## Advanced Select And Joins
+
+**IMPORTANT RULE**  
+If a column is in your SELECT statement and it doesn't have an aggregator (like SUM or COUNT) wrapped around it, it MUST be listed in the GROUP BY clause.  
+For example:
+
+```js
+// THIS WILL CAUSE AN ERROR
+SELECT department, name 
+FROM Employee 
+GROUP BY department;
+```
+In the above code, if we aggregate every row by Department, then the SQL doesn't know which name to pur first because there are many names in the department, multiple employees.  
+
+So, we have two Choices:
+
+```js
+-- THIS WILL CAUSE AN ERROR
+SELECT department, name 
+FROM Employee 
+GROUP BY department,name;
+```
+It will display all the name in the given department 
+
+OR
+
+```js
+SELECT department, COUNT(name)
+FROM Employee 
+GROUP BY department;
+```
+It will have certainty what to display in the row i.e number of employees in that particular department
