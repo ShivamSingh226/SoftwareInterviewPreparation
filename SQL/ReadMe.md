@@ -1,0 +1,99 @@
+# Problems to revisit for SQL Revision
+
+## Basic Joins
+
+### Confirmation Rate
+
+```js
+# Write your MySQL query statement below
+SELECT s.user_id,
+ROUND(AVG(if(c.action="confirmed",1,0)),2) AS confirmation_rate
+FROM Signups AS s
+LEFT JOIN Confirmations AS c
+ON
+s.user_id=c.user_id
+GROUP BY (s.user_id);
+```
+
+Look at `ROUND(AVG(if(c.action="confirmed",1,0)),2)`. It is similar to if action==confirmed -> ADD 1 else ADD 0 divided by total actions of User that's why we do `GROUP BY (s.user_id)`.
+
+
+### Managers with Atleast 5 direct reports
+
+```js
+# Write your MySQL query statement below
+SELECT e.name FROM Employee AS e
+JOIN Employee ON
+e.id=Employee.managerId
+GROUP BY e.id
+HAVING COUNT(e.id)>=5;
+```
+
+The GROUP BY clause in SQL collapses rows with identical values into single summary rows
+
+### Students and Examinations
+
+This question uses concept of CROSS JOIN (1*n) mapping a response with every row. So, every table containing n rows, each of that row would be mapped with every one of other rows of another table
+
+```js
+# Write your MySQL query statement below
+SELECT s.student_id,s.student_name,sub.subject_name,COUNT(e.student_id) AS attended_exams FROM Students AS s
+CROSS JOIN Subjects AS sub
+LEFT JOIN Examinations AS e
+ON s.student_id=e.student_id
+AND sub.subject_name=e.subject_name
+GROUP BY s.student_id,sub.subject_name,s.student_name
+ORDER BY s.student_id, sub.subject_name
+```
+Solve this question again while revising
+
+### Average Time Process per machine
+
+```js
+# Write your MySQL query statement below
+SELECT a.machine_id,ROUND(AVG(b.timestamp-a.timestamp),3) AS processing_time FROM Activity a
+JOIN Activity b
+ON a.machine_id=b.machine_id
+AND a.process_id=b.process_id
+AND a.activity_type='start'
+AND b.activity_type='end'
+GROUP BY a.machine_id;
+```
+
+SOlve this question again too
+### Rising Temperature
+```js
+# Write your MySQL query statement below
+SELECT w1.id FROM Weather w1, Weather w2
+WHERE DATEDIFF(w1.recordDate,w2.recordDate)=1 AND w1.temperature>w2.temperature
+```
+Since, we need to compare every row with each other we used implicit CROSS JOIN like `SELECT w1.id FROM Weather w1, Weather w2`
+
+## Subqueries
+
+### Department Top Three Salaries
+
+This question uses Correlated Subqueries which is processed **Outside In** , i.e the outer query is processed first because some data of the outer query is processed in the inner subquery
+
+```js
+# Write your MySQL query statement below
+SELECT d.name AS Department, e.name AS Employee,e.salary AS Salary FROM Employee e
+JOIN Department d
+ON e.departmentId=d.id
+WHERE
+3>(SELECT COUNT(DISTINCT(e2.salary)) FROM employee e2
+
+WHERE
+e2.departmentId=e.departmentId
+AND 
+e2.salary>e.salary)
+
+```
+It works like For-each loop, i.e every row from the outer query is iterated to check if the salary in the outer query is largest or not (if it comes in top-three or not)
+
+THE simple subquery is processed **inside out**
+like 
+```js
+SELECT * FROM Employee e
+WHERE e.salary > (SELECT AVG(salary) FROM EMPLOYEE)
+```
