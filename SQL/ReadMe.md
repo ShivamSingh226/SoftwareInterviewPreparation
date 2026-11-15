@@ -98,6 +98,35 @@ SELECT * FROM Employee e
 WHERE e.salary > (SELECT AVG(salary) FROM EMPLOYEE)
 ```
 
+### Movie Rating
+
+```js
+# Write your MySQL query statement below
+(SELECT u.name AS results FROM Users u
+JOIN MovieRating m
+ON
+u.user_id=m.user_id
+GROUP BY u.user_id
+ORDER BY COUNT(movie_id) DESC,u.name
+LIMIT 1)
+UNION ALL
+(SELECT m1.title AS results FROM Movies m1
+JOIN MovieRating m2
+ON m1.movie_id=m2.movie_id
+AND m2.created_at>="2020-02-01" AND m2.created_at<="2020-02-29"
+GROUP BY m1.movie_id
+ORDER BY AVG(m2.rating) DESC,m1.title
+LIMIT 1)
+
+
+```
+
+- Important Rule:
+1. When you use **UNION**, **SQL** expects **ORDER BY** and **LIMIT** to either apply to the entire combined result (placed at the very end of everything) OR to individual queries <u>**(which must be wrapped in parentheses)**. Because your first query isn't in parentheses, the SQL parser crashes when it suddenly hits the **UNION** keyword.</u>
+
+2. <u>Standard **UNION** removes duplicate rows.</u> If the top user and the top movie happen to have the exact same name (e.g., a user named "Daniel" and a movie named "Daniel"), standard UNION would delete one.<u> **UNION ALL** keeps both.</u>
+
+
 ## Advanced Select And Joins
 
 **IMPORTANT RULE**  
