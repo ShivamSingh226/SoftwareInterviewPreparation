@@ -512,7 +512,8 @@ class Application is
 | Solid Diamond(<<>> --->) | Composition (Strong "has-a") | Part depends on a whole; it is not independent. For example: `House` and its `Rooms` |
 | (Has-a-Reference)(-->) | Navigability | Stores the reference of other class |
 | Extends (->) | Inheritance | `Class Car Extends Vehicle` |
-| Implements(--->) | Implementation interface | `Class Television implements Screen` |
+| Implements(---/>) | Implementation interface | `Class Television implements Screen` |
+| Uses a (-->) | Uses a class as a paramater, method call, or static method call but not store its reference | Stores the parameter in function call, or method local variable |
 
 ### Revision Quick Tips and Notes
 
