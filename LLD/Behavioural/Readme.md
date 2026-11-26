@@ -545,3 +545,413 @@ class Command is
             backup.restore()
     // ...
 ```
+
+
+## Observer Design Pattern
+
+*Subject*: An object having interesting property, since it interacts with other objects,*Subscriber* about the changes in its state, it is called *Publisher*.
+
+[To explore code related to Observer](https://github.com/ShivamSingh226/LLD/tree/master/MyJava/src/observer)
+
+## Pseudo-Code
+
+![Observer](image-13.png)
+
+```js
+// The base publisher class includes subscription management
+// code and notification methods.
+class EventManager is
+    private field listeners: hash map of event types and listeners
+
+    method subscribe(eventType, listener) is
+        listeners.add(eventType, listener)
+
+    method unsubscribe(eventType, listener) is
+        listeners.remove(eventType, listener)
+
+    method notify(eventType, data) is
+        foreach (listener in listeners.of(eventType)) do
+            listener.update(data)
+
+// The concrete publisher contains real business logic that's
+// interesting for some subscribers. We could derive this class
+// from the base publisher, but that isn't always possible in
+// real life because the concrete publisher might already be a
+// subclass. In this case, you can patch the subscription logic
+// in with composition, as we did here.
+class Editor is
+    public field events: EventManager
+    private field file: File
+
+    constructor Editor() is
+        events = new EventManager()
+
+    // Methods of business logic can notify subscribers about
+    // changes.
+    method openFile(path) is
+        this.file = new File(path)
+        events.notify("open", file.name)
+
+    method saveFile() is
+        file.write()
+        events.notify("save", file.name)
+
+    // ...
+
+
+// Here's the subscriber interface. If your programming language
+// supports functional types, you can replace the whole
+// subscriber hierarchy with a set of functions.
+interface EventListener is
+    method update(filename)
+
+// Concrete subscribers react to updates issued by the publisher
+// they are attached to.
+class LoggingListener implements EventListener is
+    private field log: File
+    private field message: string
+
+    constructor LoggingListener(log_filename, message) is
+        this.log = new File(log_filename)
+        this.message = message
+
+    method update(filename) is
+        log.write(replace('%s',filename,message))
+
+class EmailAlertsListener implements EventListener is
+    private field email: string
+    private field message: string
+
+    constructor EmailAlertsListener(email, message) is
+        this.email = email
+        this.message = message
+
+    method update(filename) is
+        system.email(email, replace('%s',filename,message))
+
+
+// An application can configure publishers and subscribers at
+// runtime.
+class Application is
+    method config() is
+        editor = new Editor()
+
+        logger = new LoggingListener(
+            "/path/to/log.txt",
+            "Someone has opened the file: %s")
+        editor.events.subscribe("open", logger)
+
+        emailAlerts = new EmailAlertsListener(
+            "admin@example.com",
+            "Someone has changed the file: %s")
+        editor.events.subscribe("save", emailAlerts)
+```
+
+| Relationship | How its Coded | Lifecycle Ownership |
+|---|---|---|
+|**Composition**|`this.events=new EventManager()` inside `Editor` Constructor|Editor creates and owns EventManager|
+|**Aggregation**|`EventManager` is created outside and passed into `Editor(events)`|`EventManager` exists independently and can outlive `Editor` or be shared with other objects |
+
+### Aggregation
+```js
+class EventManager {
+    public void notify(String event) {
+        System.out.println("Event triggered: " + event);
+    }
+}
+
+class Editor {
+    private EventManager events; // Reference stored as a field
+
+    // Aggregation: receives an already-existing object
+    public Editor(EventManager events) {
+        this.events = events;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // 1. Created independently outside Editor
+        EventManager sharedEvents = new EventManager();
+
+        // 2. Passed into Editor
+        Editor editor = new Editor(sharedEvents);
+
+        // 3. Even if editor is destroyed, sharedEvents still lives
+        editor = null;
+        sharedEvents.notify("Still alive!");
+    }
+}
+```
+
+### Composition
+
+```js
+class EventManager {
+    public void subscribe(String eventType) {
+        System.out.println("Subscribed to: " + eventType);
+    }
+
+    public void notify(String eventType) {
+        System.out.println("Event triggered: " + eventType);
+    }
+}
+
+class Editor {
+    // 1. private final: hidden from outside and cannot be reassigned
+    private final EventManager events;
+
+    public Editor() {
+        // 2. Instantiated INSIDE the parent class
+        this.events = new EventManager();
+    }
+
+    // 3. Delegate behavior instead of exposing the EventManager object directly
+    public void subscribe(String eventType) {
+        this.events.subscribe(eventType);
+    }
+
+    public void openFile(String path) {
+        this.events.notify("open");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Editor editor = new Editor();
+        editor.subscribe("open");
+        editor.openFile("test.txt");
+
+        // When editor is destroyed, its EventManager is garbage-collected with it
+        editor = null;
+    }
+}
+```
+
+## UML CLASS DIAGRAM
+
+![Refactoring Guru](image-12.png)
+
+## State Design Pattern
+
+- Switching rules for changing states: *Transition*
+
+- Reference to one of the state objects would be stored in the object: *Context*
+
+- The states may be aware of each other as they make transition, while such is not the case in *Strategy* DP pattern
+
+## Pseudo-Code
+
+![Pseudo-Code](image-14.png)
+
+```js
+// The AudioPlayer class acts as a context. It also maintains a
+// reference to an instance of one of the state classes that
+// represents the current state of the audio player.
+class AudioPlayer is
+    field state: State
+    field UI, volume, playlist, currentSong
+
+    constructor AudioPlayer() is
+        this.state = new ReadyState(this)
+
+        // Context delegates handling user input to a state
+        // object. Naturally, the outcome depends on what state
+        // is currently active, since each state can handle the
+        // input differently.
+        UI = new UserInterface()
+        UI.lockButton.onClick(this.clickLock)
+        UI.playButton.onClick(this.clickPlay)
+        UI.nextButton.onClick(this.clickNext)
+        UI.prevButton.onClick(this.clickPrevious)
+
+    // Other objects must be able to switch the audio player's
+    // active state.
+    method changeState(state: State) is
+        this.state = state
+
+    // UI methods delegate execution to the active state.
+    method clickLock() is
+        state.clickLock()
+    method clickPlay() is
+        state.clickPlay()
+    method clickNext() is
+        state.clickNext()
+    method clickPrevious() is
+        state.clickPrevious()
+
+    // A state may call some service methods on the context.
+    method startPlayback() is
+        // ...
+    method stopPlayback() is
+        // ...
+    method nextSong() is
+        // ...
+    method previousSong() is
+        // ...
+    method fastForward(time) is
+        // ...
+    method rewind(time) is
+        // ...
+
+
+// The base state class declares methods that all concrete
+// states should implement and also provides a backreference to
+// the context object associated with the state. States can use
+// the backreference to transition the context to another state.
+abstract class State is
+    protected field player: AudioPlayer
+
+    // Context passes itself through the state constructor. This
+    // may help a state fetch some useful context data if it's
+    // needed.
+    constructor State(player) is
+        this.player = player
+
+    abstract method clickLock()
+    abstract method clickPlay()
+    abstract method clickNext()
+    abstract method clickPrevious()
+
+
+// Concrete states implement various behaviors associated with a
+// state of the context.
+class LockedState extends State is
+
+    // When you unlock a locked player, it may assume one of two
+    // states.
+    method clickLock() is
+        if (player.playing)
+            player.changeState(new PlayingState(player))
+        else
+            player.changeState(new ReadyState(player))
+
+    method clickPlay() is
+        // Locked, so do nothing.
+
+    method clickNext() is
+        // Locked, so do nothing.
+
+    method clickPrevious() is
+        // Locked, so do nothing.
+
+
+// They can also trigger state transitions in the context.
+class ReadyState extends State is
+    method clickLock() is
+        player.changeState(new LockedState(player))
+
+    method clickPlay() is
+        player.startPlayback()
+        player.changeState(new PlayingState(player))
+
+    method clickNext() is
+        player.nextSong()
+
+    method clickPrevious() is
+        player.previousSong()
+
+
+class PlayingState extends State is
+    method clickLock() is
+        player.changeState(new LockedState(player))
+
+    method clickPlay() is
+        player.stopPlayback()
+        player.changeState(new ReadyState(player))
+
+    method clickNext() is
+        if (event.doubleclick)
+            player.nextSong()
+        else
+            player.fastForward(5)
+
+    method clickPrevious() is
+        if (event.doubleclick)
+            player.previous()
+        else
+            player.rewind(5)
+```
+
+## Class UML Diagram
+
+![Checkout Refactoring Guru](image-15.png)
+
+## Strategy DP
+
+Grouping of specific algorithms into *Strategy* to which *Context* stores the reference.
+
+## Pseudo-code
+
+```js
+// The strategy interface declares operations common to all
+// supported versions of some algorithm. The context uses this
+// interface to call the algorithm defined by the concrete
+// strategies.
+interface Strategy is
+    method execute(a, b)
+
+// Concrete strategies implement the algorithm while following
+// the base strategy interface. The interface makes them
+// interchangeable in the context.
+class ConcreteStrategyAdd implements Strategy is
+    method execute(a, b) is
+        return a + b
+
+class ConcreteStrategySubtract implements Strategy is
+    method execute(a, b) is
+        return a - b
+
+class ConcreteStrategyMultiply implements Strategy is
+    method execute(a, b) is
+        return a * b
+
+// The context defines the interface of interest to clients.
+class Context is
+    // The context maintains a reference to one of the strategy
+    // objects. The context doesn't know the concrete class of a
+    // strategy. It should work with all strategies via the
+    // strategy interface.
+    private strategy: Strategy
+
+    // Usually the context accepts a strategy through the
+    // constructor, and also provides a setter so that the
+    // strategy can be switched at runtime.
+    method setStrategy(Strategy strategy) is
+        this.strategy = strategy
+
+    // The context delegates some work to the strategy object
+    // instead of implementing multiple versions of the
+    // algorithm on its own.
+    method executeStrategy(int a, int b) is
+        return strategy.execute(a, b)
+
+
+// The client code picks a concrete strategy and passes it to
+// the context. The client should be aware of the differences
+// between strategies in order to make the right choice.
+class ExampleApplication is
+    method main() is
+        Create context object.
+
+        Read first number.
+        Read last number.
+        Read the desired action from user input.
+
+        if (action == addition) then
+            context.setStrategy(new ConcreteStrategyAdd())
+
+        if (action == subtraction) then
+            context.setStrategy(new ConcreteStrategySubtract())
+
+        if (action == multiplication) then
+            context.setStrategy(new ConcreteStrategyMultiply())
+
+        result = context.executeStrategy(First number, Second number)
+
+        Print result.
+```
+
+## UML Class Diagram
+
+![Refactoring Guru Diagram](image-16.png)
