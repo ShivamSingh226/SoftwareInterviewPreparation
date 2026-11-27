@@ -515,6 +515,94 @@ class Application is
 | Implements(---/>) | Implementation interface | `Class Television implements Screen` |
 | Uses a (-->) | Uses a class as a paramater, method call, or static method call but not store its reference | Stores the parameter in function call, or method local variable |
 
+
+
+### **Aggregation**
+
+```js
+class EventManager {
+    public void subscribe(String eventType) {
+        System.out.println("Subscribed to: " + eventType);
+    }
+
+    public void notify(String eventType) {
+        System.out.println("Event triggered: " + eventType);
+    }
+}
+
+class Editor {
+    // 1. private final: hidden from outside and cannot be reassigned
+    private final EventManager events;
+
+    public Editor() {
+        // 2. Instantiated INSIDE the parent class
+        this.events = new EventManager();
+    }
+
+    // 3. Delegate behavior instead of exposing the EventManager object directly
+    public void subscribe(String eventType) {
+        this.events.subscribe(eventType);
+    }
+
+    public void openFile(String path) {
+        this.events.notify("open");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Editor editor = new Editor();
+        editor.subscribe("open");
+        editor.openFile("test.txt");
+
+        // When editor is destroyed, its EventManager is garbage-collected with it
+        editor = null;
+    }
+}
+```
+### Composition
+
+```js
+class EventManager {
+    public void subscribe(String eventType) {
+        System.out.println("Subscribed to: " + eventType);
+    }
+
+    public void notify(String eventType) {
+        System.out.println("Event triggered: " + eventType);
+    }
+}
+
+class Editor {
+    // 1. private final: hidden from outside and cannot be reassigned
+    private final EventManager events;
+
+    public Editor() {
+        // 2. Instantiated INSIDE the parent class
+        this.events = new EventManager();
+    }
+
+    // 3. Delegate behavior instead of exposing the EventManager object directly
+    public void subscribe(String eventType) {
+        this.events.subscribe(eventType);
+    }
+
+    public void openFile(String path) {
+        this.events.notify("open");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Editor editor = new Editor();
+        editor.subscribe("open");
+        editor.openFile("test.txt");
+
+        // When editor is destroyed, its EventManager is garbage-collected with it
+        editor = null;
+    }
+}
+```
 ### Revision Quick Tips and Notes
 
 - **Revisit Decorator and Flyweight Pattern**

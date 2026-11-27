@@ -955,3 +955,244 @@ class ExampleApplication is
 ## UML Class Diagram
 
 ![Refactoring Guru Diagram](image-16.png)
+
+
+## Visitor DP
+
+- Separation of Algorithms from Objects into *Visitor*
+
+- Objects to *accept* visitors and select which version of function they need to execute: *Double Dispatch*
+
+### Dynamic Binding
+
+#### **Method Overriding**
+
+```js
+method drawShape(shape: Shape) is
+    shape.draw();
+```
+- In the above code, four subclasses inherit `Shape` class. The only way we to know which `draw()` to call is by launching the code. That's why **Dynamic/Late** Binding as every object can be bound to different implementation of `draw()`.
+
+### Static Binding
+
+#### **Method Overloading**
+
+```js
+method exportShape(shape: Shape) is
+    Exporter exporter = new Exporter()
+    exporter.export(shape);
+```
+
+- The method `export()`, what if it doesn't exist for a specific `Shape` class like `Eclipse`? Thus to avoid this ambiguity, the code is compiled for the most basic method which maybe: `void export(Shape shape){ print("The most basic shape")}`. That's why **Static/Early Binding** which can't be altered at the Runtime.
+
+### Double Dispatch
+
+- Dynamic Binding along with Method Overloading
+
+#### Pseudo-Code
+```js
+class Visitor is
+    method visit(s: Shape) is
+        print("Visited shape")
+    method visit(d: Dot)
+        print("Visited dot")
+
+interface Graphic is
+    method accept(v: Visitor)
+
+class Shape implements Graphic is
+    method accept(v: Visitor)
+        // Compiler knows for sure that `this` is a `Shape`.
+        // Which means that the `visit(s: Shape)` can be safely called.
+        v.visit(this)
+
+class Dot extends Shape is
+    method accept(v: Visitor)
+        // Compiler knows that `this` is a `Dot`.
+        // Which means that the `visit(s: Dot)` can be safely called.
+        v.visit(this)
+
+
+Visitor v = new Visitor();
+Graphic g = new Dot();
+
+// The `accept` method is overriden, not overloaded. Compiler binds it
+// dynamically. Therefore the `accept` will be executed on a class that
+// corresponds to an object calling a method (in our case, the `Dot` class).
+g.accept(v);
+
+// Output: "Visited dot"
+```
+
+
+## UML CLASS DIAGRAM
+
+![Visitor](image-17.png)
+
+## Pseudo-Code
+
+```js
+// The element interface declares an `accept` method that takes
+// the base visitor interface as an argument.
+interface Shape is
+    method move(x, y)
+    method draw()
+    method accept(v: Visitor)
+
+// Each concrete element class must implement the `accept`
+// method in such a way that it calls the visitor's method that
+// corresponds to the element's class.
+class Dot implements Shape is
+    // ...
+
+    // Note that we're calling `visitDot`, which matches the
+    // current class name. This way we let the visitor know the
+    // class of the element it works with.
+    method accept(v: Visitor) is
+        v.visitDot(this)
+
+class Circle implements Shape is
+    // ...
+    method accept(v: Visitor) is
+        v.visitCircle(this)
+
+class Rectangle implements Shape is
+    // ...
+    method accept(v: Visitor) is
+        v.visitRectangle(this)
+
+class CompoundShape implements Shape is
+    // ...
+    method accept(v: Visitor) is
+        v.visitCompoundShape(this)
+
+
+// The Visitor interface declares a set of visiting methods that
+// correspond to element classes. The signature of a visiting
+// method lets the visitor identify the exact class of the
+// element that it's dealing with.
+interface Visitor is
+    method visitDot(d: Dot)
+    method visitCircle(c: Circle)
+    method visitRectangle(r: Rectangle)
+    method visitCompoundShape(cs: CompoundShape)
+
+// Concrete visitors implement several versions of the same
+// algorithm, which can work with all concrete element classes.
+//
+// You can experience the biggest benefit of the Visitor pattern
+// when using it with a complex object structure such as a
+// Composite tree. In this case, it might be helpful to store
+// some intermediate state of the algorithm while executing the
+// visitor's methods over various objects of the structure.
+class XMLExportVisitor implements Visitor is
+    method visitDot(d: Dot) is
+        // Export the dot's ID and center coordinates.
+
+    method visitCircle(c: Circle) is
+        // Export the circle's ID, center coordinates and
+        // radius.
+
+    method visitRectangle(r: Rectangle) is
+        // Export the rectangle's ID, left-top coordinates,
+        // width and height.
+
+    method visitCompoundShape(cs: CompoundShape) is
+        // Export the shape's ID as well as the list of its
+        // children's IDs.
+
+
+// The client code can run visitor operations over any set of
+// elements without figuring out their concrete classes. The
+// accept operation directs a call to the appropriate operation
+// in the visitor object.
+class Application is
+    field allShapes: array of Shapes
+
+    method export() is
+        exportVisitor = new XMLExportVisitor()
+
+        foreach (shape in allShapes) do
+            shape.accept(exportVisitor)
+```
+
+## Template Method DP
+
+![Template Method](image-18.png)
+
+### Pseudo-code
+
+```js
+// The abstract class defines a template method that contains a
+// skeleton of some algorithm composed of calls, usually to
+// abstract primitive operations. Concrete subclasses implement
+// these operations, but leave the template method itself
+// intact.
+class GameAI is
+    // The template method defines the skeleton of an algorithm.
+    method turn() is
+        collectResources()
+        buildStructures()
+        buildUnits()
+        attack()
+
+    // Some of the steps may be implemented right in a base
+    // class.
+    method collectResources() is
+        foreach (s in this.builtStructures) do
+            s.collect()
+
+    // And some of them may be defined as abstract.
+    abstract method buildStructures()
+    abstract method buildUnits()
+
+    // A class can have several template methods.
+    method attack() is
+        enemy = closestEnemy()
+        if (enemy == null)
+            sendScouts(map.center)
+        else
+            sendWarriors(enemy.position)
+
+    abstract method sendScouts(position)
+    abstract method sendWarriors(position)
+
+// Concrete classes have to implement all abstract operations of
+// the base class but they must not override the template method
+// itself.
+class OrcsAI extends GameAI is
+    method buildStructures() is
+        if (there are some resources) then
+            // Build farms, then barracks, then stronghold.
+
+    method buildUnits() is
+        if (there are plenty of resources) then
+            if (there are no scouts)
+                // Build peon, add it to scouts group.
+            else
+                // Build grunt, add it to warriors group.
+
+    // ...
+
+    method sendScouts(position) is
+        if (scouts.length > 0) then
+            // Send scouts to position.
+
+    method sendWarriors(position) is
+        if (warriors.length > 5) then
+            // Send warriors to position.
+
+// Subclasses can also override some operations with a default
+// implementation.
+class MonstersAI extends GameAI is
+    method collectResources() is
+        // Monsters don't collect resources.
+
+    method buildStructures() is
+        // Monsters don't build structures.
+
+    method buildUnits() is
+        // Monsters don't build units.
+```
+
+- **Template Method** works at the class level(inheritance), so it’s static. **Strategy** works on the object level(composition, i.e which lets you change behaviour of the object at runtime), letting you switch behaviors at runtime.
